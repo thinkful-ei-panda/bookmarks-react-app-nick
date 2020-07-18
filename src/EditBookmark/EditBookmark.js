@@ -11,8 +11,38 @@ class EditBookmark extends Component {
   static contextType = BookmarksContext;
 
   state = {
+    title: '',
+    url: '',
+    description: '',
+    rating: 1,
     error: null,
   };
+
+  componentDidMount() {
+    const bookmarkId = this.props.match.params.bookmarkId;
+    fetch(`${config.API_ENDPOINT}${bookmarkId}`, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': `Bearer ${config.API_KEY}`
+      }
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(res.status);
+        }
+        return res.json()
+      })
+      .then(res => {
+        this.setState({
+          title: res.title,
+          url: res.url,
+          description: res.description,
+          rating: res.rating,
+        })
+      })
+      .catch(error => this.setState({ error }));
+  }
 
   handleSubmit = e => {
     e.preventDefault()
@@ -62,7 +92,7 @@ class EditBookmark extends Component {
   };
 
   render() {
-    const { error } = this.state
+    const { error, title, url, description, rating } = this.state
     return (
       <section className='EditBookmark'>
         <h2>Create a bookmark</h2>
@@ -84,6 +114,7 @@ class EditBookmark extends Component {
               name='title'
               id='title'
               placeholder='Great website!'
+              value={title}
               required
             />
           </div>
@@ -98,6 +129,7 @@ class EditBookmark extends Component {
               name='url'
               id='url'
               placeholder='https://www.great-website.com/'
+              value={url}
               required
             />
           </div>
@@ -108,6 +140,7 @@ class EditBookmark extends Component {
             <textarea
               name='description'
               id='description'
+              value={description}
             />
           </div>
           <div>
@@ -123,6 +156,7 @@ class EditBookmark extends Component {
               defaultValue='1'
               min='1'
               max='5'
+              value={rating}
               required
             />
           </div>

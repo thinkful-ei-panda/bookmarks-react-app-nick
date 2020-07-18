@@ -6,7 +6,7 @@ import './BookmarkItem.css';
 import { Link } from 'react-router-dom';
 
 function deleteBookmarkRequest(bookmarkId, cb) {
-  fetch(config.API_ENDPOINT + `/${bookmarkId}`, {
+  fetch(config.API_ENDPOINT + `${bookmarkId}`, {
     method: 'DELETE',
     headers: {
       'content-type': 'application/json',
@@ -16,15 +16,14 @@ function deleteBookmarkRequest(bookmarkId, cb) {
     .then(res => {
       if (!res.ok) {
         // get the error message from the response,
-        return res.json().then(error => {
+        return res.then(error => {
           // then throw it
           throw error
         })
       }
-      return res.json()
+      return res
     })
     .then(data => {
-      console.log({ data })
       cb(bookmarkId)
     })
     .catch(error => {

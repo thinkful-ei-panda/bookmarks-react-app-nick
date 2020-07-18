@@ -29,7 +29,6 @@ class App extends Component {
 
   deleteBookmark = (bookmarkId) => {
     console.log(bookmarkId)
-    // todo: remove bookmark with bookmarkId from state
     const newBookmarks = this.state.bookmarks.filter(bm =>
       bm.id !== bookmarkId
     )
