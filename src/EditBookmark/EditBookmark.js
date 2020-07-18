@@ -8,6 +8,13 @@ const Required = () => (
 )
 
 class EditBookmark extends Component {
+  constructor(props) {
+    super(props);
+    this.titleInput = React.createRef();
+    this.urlInput = React.createRef();
+    this.ratingInput = React.createRef();
+  }
+
   static contextType = BookmarksContext;
 
   state = {
@@ -46,17 +53,18 @@ class EditBookmark extends Component {
 
   handleSubmit = e => {
     e.preventDefault()
-    // get the form fields from the event
     const { title, url, description, rating } = e.target
+    const bookmarkId = this.props.match.params.bookmarkId;
     const bookmark = {
+      id: bookmarkId,
       title: title.value,
       url: url.value,
       description: description.value,
       rating: rating.value,
     }
     this.setState({ error: null })
-    fetch(config.API_ENDPOINT, {
-      method: 'POST',
+    fetch(`${config.API_ENDPOINT}${bookmarkId}`, {
+      method: 'PATCH',
       body: JSON.stringify(bookmark),
       headers: {
         'content-type': 'application/json',
@@ -65,37 +73,37 @@ class EditBookmark extends Component {
     })
       .then(res => {
         if (!res.ok) {
-          // get the error message from the response,
-          return res.json().then(error => {
-            // then throw it
-            throw error
-          })
+          return res.json().then(error => Promise.reject(error))
         }
-        return res.json()
+        return res
       })
       .then(data => {
-        title.value = ''
-        url.value = ''
-        description.value = ''
-        rating.value = ''
-        this.context.editBookmark(data)
-        this.props.history.push('/')
+        this.context.updateBookmark(bookmark);
+        title.value = '';
+        url.value = '';
+        description.value = '';
+        rating.value = '';
+        this.props.history.push('/');
       })
       .catch(error => {
-        console.log(error)
-        this.setState({ error })
+        console.log(error);
+        this.setState({ error });
       })
   }
 
   handleClickCancel = () => {
-    this.props.history.push('/')
+    this.props.history.push('/');
   };
+
+  updateDescription = (e) => {
+    this.setState({ description: e.value });
+  }
 
   render() {
     const { error, title, url, description, rating } = this.state
     return (
       <section className='EditBookmark'>
-        <h2>Create a bookmark</h2>
+        <h2>Edit bookmark</h2>
         <form
           className='EditBookmark__form'
           onSubmit={this.handleSubmit}
@@ -113,8 +121,9 @@ class EditBookmark extends Component {
               type='text'
               name='title'
               id='title'
+              ref={this.titleInput}
               placeholder='Great website!'
-              value={title}
+              defaultValue={title}
               required
             />
           </div>
@@ -128,8 +137,9 @@ class EditBookmark extends Component {
               type='url'
               name='url'
               id='url'
+              ref={this.urlInput}
               placeholder='https://www.great-website.com/'
-              value={url}
+              defaultValue={url}
               required
             />
           </div>
@@ -141,6 +151,7 @@ class EditBookmark extends Component {
               name='description'
               id='description'
               value={description}
+              onChange={(e) => this.updateDescription(e)}
             />
           </div>
           <div>
@@ -153,10 +164,10 @@ class EditBookmark extends Component {
               type='number'
               name='rating'
               id='rating'
-              defaultValue='1'
+              defaultValue={rating}
               min='1'
               max='5'
-              value={rating}
+              ref={this.ratingInput}
               required
             />
           </div>
