@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import BookmarksContext from '../BookmarksContext';
 import config from '../config'
-import './AddBookmark.css';
+import './EditBookmark.css';
 
 const Required = () => (
-  <span className='AddBookmark__required'>*</span>
+  <span className='EditBookmark__required'>*</span>
 )
 
-class AddBookmark extends Component {
+class EditBookmark extends Component {
   static contextType = BookmarksContext;
 
   state = {
@@ -48,7 +48,7 @@ class AddBookmark extends Component {
         url.value = ''
         description.value = ''
         rating.value = ''
-        this.context.addBookmark(data)
+        this.context.editBookmark(data)
         this.props.history.push('/')
       })
       .catch(error => {
@@ -64,13 +64,13 @@ class AddBookmark extends Component {
   render() {
     const { error } = this.state
     return (
-      <section className='AddBookmark'>
+      <section className='EditBookmark'>
         <h2>Create a bookmark</h2>
         <form
-          className='AddBookmark__form'
+          className='EditBookmark__form'
           onSubmit={this.handleSubmit}
         >
-          <div className='AddBookmark__error' role='alert'>
+          <div className='EditBookmark__error' role='alert'>
             {error && <p>{error.message}</p>}
           </div>
           <div>
@@ -126,7 +126,7 @@ class AddBookmark extends Component {
               required
             />
           </div>
-          <div className='AddBookmark__buttons'>
+          <div className='EditBookmark__buttons'>
             <button type='button' onClick={this.handleClickCancel}>
               Cancel
             </button>
@@ -141,4 +141,4 @@ class AddBookmark extends Component {
   }
 }
 
-export default AddBookmark;
+export default EditBookmark;
